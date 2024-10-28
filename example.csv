@@ -1,0 +1,31 @@
+pre,res
+http://example.com/search?q=<script>alert('XSS')</script>,XSS
+http://example.com/view.php?id=<img src='x' onerror='alert(1)'>,XSS
+http://vulnerable-site.com/login?username=<script>alert('hack')</script>&xsspassword=1234,XSS
+http://example.com/?name=<svg/onload=alert('XSS')>,XSS
+http://example.com/comment?text=<iframe src="javascript:alert('XSS')"></iframe>,XSS
+http://example.com/product?id=1' OR '1'='1,SQLI
+http://example.com/login?username=admin'--&password=password,SQLI
+http://example.com/search?q='; DROP TABLE users; --,SQLI
+http://example.com/article?id=10;SELECT * FROM users WHERE '1'='1,SQLI
+http://example.com/products.php?category=electronics%20OR%201=1,SQLI
+http://example.com/index.php?page=../../../../etc/passwd,LFI
+http://example.com/download.php?file=../../config.php,LFI
+http://vulnerable-site.com/page?file=../../../../../windows/system32/drivers/etc/hosts,LFI
+http://example.com/template.php?path=../../../../../../var/log/auth.log,LFI
+http://example.com/view?doc=../../../../../etc/shadow,LFI
+http://example.com/exec?cmd=lsCommandI
+http://example.com/ping?host=google.com;cat%20/etc/passwdCommandI
+http://vulnerable-site.com/?cmd=ping%20127.0.0.1;rm%20-rf%20/CommandI
+http://example.com/shell?command=whoami;uname -aCommandI
+http://example.com/exec?input=ping -c 4 google.com; cat /etc/passwdCommandI
+http://example.com/home,seguro
+http://example.com/search?q=product,seguro
+http://example.com/contact,seguro
+http://secure-website.com/about,seguro
+http://secure-website.com/products?id=25,seguro
+http://example.com/article?id=10,seguro
+http://trusted-site.com/blog?post=5,seguro
+http://example.com/login?username=user&password=securepass123,seguro
+http://example.com/shop/category/electronics,seguro
+http://trusted-site.com/services/contact,seguro
