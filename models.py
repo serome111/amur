@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.naive_bayes import MultinomialNB
@@ -9,19 +9,34 @@ from sklearn import tree
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, BaggingClassifier
+# from xgboost import XGBClassifier
+# from lightgbm import LGBMClassifier
+from sklearn.linear_model import LogisticRegression
 from scipy.sparse import hstack
+import csv
 
 # Clase de modelos ajustada
 class Models:
 
     def __init__(self):
+        # Agregamos todos los modelos recomendados
         self.reg = {
-            'NB': MultinomialNB(),
-            'KNN': KNeighborsClassifier(),
+            'NB': MultinomialNB(alpha=0.005),
+            'KNN': KNeighborsClassifier(n_neighbors=3),
             'Nn': MLPClassifier(),
-            'TreeCl': tree.DecisionTreeClassifier()
+            'TreeCl': tree.DecisionTreeClassifier(max_depth=15),
+            'RF': RandomForestClassifier(criterion='entropy', max_depth=30, n_estimators=200),
+            # 'XGB': XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
+            # 'LGBM': LGBMClassifier(),
+            # 'SVM': SVC()
+            'LR': LogisticRegression(),
+            'AdaBoost': AdaBoostClassifier(algorithm='SAMME', learning_rate=1, n_estimators=100),
+            'Bagging': BaggingClassifier(estimator=tree.DecisionTreeClassifier())
         }
 
+        # Agregamos los parámetros para cada modelo
         self.params = {
             'NB': {
                 'alpha': [.01, .04, .005]
@@ -38,27 +53,61 @@ class Models:
                 'tol': [0.01],
                 'early_stopping': [True],
                 'n_iter_no_change': [10],
-                'verbose': [True]
+                'verbose': [False]
             },
             'TreeCl': {
                 'criterion': ['gini', 'entropy'],
                 'max_depth': [4, 5, 6, 7, 8, 9, 10, 15, 20]
+            },
+            'RF': {
+                'n_estimators': [100, 200, 300],
+                'max_depth': [10, 20, 30],
+                'criterion': ['gini', 'entropy']
+            },
+            # 'XGB': {
+            #     'n_estimators': [100, 200],
+            #     'max_depth': [6, 10, 15],
+            #     'learning_rate': [0.01, 0.1, 0.3]
+            # },
+            # 'LGBM': {
+            #     'n_estimators': [100, 200],
+            #     'max_depth': [6, 10, 15],
+            #     'learning_rate': [0.01, 0.1, 0.3]
+            # },
+            # 'SVM': {
+            #     'C': [0.1, 1, 10],
+            #     'kernel': ['linear', 'rbf']
+            # }
+            'LR': {
+                'C': [0.01, 0.1, 1, 10],
+                'penalty': ['l2']
+            },
+            'AdaBoost': {
+                'n_estimators': [50, 100],
+                'learning_rate': [0.01, 0.1, 1]
+            },
+            'Bagging': {
+                'n_estimators': [10, 50, 100]
             }
         }
 
     def preprocess_data(self, df):
         """
-        Preprocesar el texto (URLs) convirtiéndolas a una representación numérica.
-        Incluir otros campos si es necesario.
+        Preprocesar URLs: Convertir todo a minúsculas, pero sin eliminar ningún carácter.
+        Vectorización usando TfidfVectorizer.
         """
-        vectorizer = CountVectorizer()
+        # Convertir las URLs a minúsculas sin eliminar caracteres
+        df['urls'] = df['urls'].str.lower()
+
+        # Utilizamos TfidfVectorizer para capturar los patrones en las URLs
+        vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(3, 5))  # N-gramas de 3 a 5 caracteres
         X_urls = vectorizer.fit_transform(df['urls'])
 
-        # Si el campo extra es de texto o numérico, procesarlo
+        # Si hay campos adicionales, los procesamos
         if 'extra_field' in df.columns:
             X_extra = df[['extra_field']].values
-            X_extra = StandardScaler().fit_transform(X_extra)  # Escalar si es numérico
-            X = hstack((X_urls, X_extra))  # Usar hstack para concatenar matrices dispersas y densas
+            X_extra = StandardScaler().fit_transform(X_extra)  # Escalado si es numérico
+            X = hstack((X_urls, X_extra))  # Usar hstack para combinar
         else:
             X = X_urls
 
@@ -72,6 +121,7 @@ class Models:
         best_score = 0
         best_model = None
         pca = None
+        name_model = ""
 
         scaler = StandardScaler(with_mean=False)
         X_train_scaled = scaler.fit_transform(X_train)
@@ -81,49 +131,25 @@ class Models:
             X_train_prepared, X_test_prepared = X_train_scaled, X_test_scaled
 
             if name in ['KNN', 'Nn']:
-                # Ajusta el número de componentes de PCA según la dimensionalidad
                 n_components = min(10, X_train_scaled.shape[1])
                 pca = PCA(n_components=n_components)
                 X_train_prepared = pca.fit_transform(X_train_scaled)
                 X_test_prepared = pca.transform(X_test_scaled)
 
+            # print(f"Entrenando modelo {name}...")
             grid_reg = GridSearchCV(
-                reg, self.params[name], cv=5, scoring='accuracy').fit(X_train_prepared, y_train)
+                reg, self.params[name], cv=4, scoring='accuracy').fit(X_train_prepared, y_train)
             score = grid_reg.best_score_
-            print(f"Score para {name}: {score}")
-            print(f"Mejor modelo: {grid_reg.best_estimator_}")
+            # print("")
+            # print(f"Score para {name}: {score}")
+            # print(f"Mejor modelo: {grid_reg.best_estimator_}")
 
             if score > best_score:
                 best_score = score
                 best_model = grid_reg.best_estimator_
+                name_model = name
 
+        print("")
         print(f"Mejor Score: {best_score}")
         print(f"Mejor Modelo: {best_model}")
-        return best_model, X_test_prepared
-
-
-# Cargar datos desde CSV
-data = pd.read_csv('./in/urls.csv')
-
-# Instancia de la clase Models
-model = Models()
-
-# Preprocesar los datos
-X, y = model.preprocess_data(data)
-
-# Dividir los datos en conjuntos de entrenamiento y prueba
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Entrenar y obtener el mejor modelo
-best_model, X_test_transformed = model.grid_training(X_train, y_train, X_test)
-
-# Evaluar el modelo en el conjunto de prueba
-y_pred = best_model.predict(X_test_transformed)
-
-# Asegurar que tanto y_test como y_pred sean cadenas de texto
-y_test_str = [str(label) for label in y_test]
-y_pred_str = [str(label) for label in y_pred]
-
-# Evitar error de precisión indefinida y asegurar tipos de datos consistentes
-print(classification_report(y_test_str, y_pred_str, zero_division=1))
-print(f"Accuracy: {accuracy_score(y_test_str, y_pred_str)}")
+        return best_model, X_test_prepared,name_model
