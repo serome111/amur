@@ -21,4 +21,8 @@ In server.py put the path where your model has been exported from the models.py 
 
 ```model_path = './models/best_model.joblib'
 vectorizer_path = './models/vectorizer.joblib'
-loaded_model = load(model_path)```
+loaded_model = load(model_path)
+```
+
+# web sources
+https://medium.com/bitgrit-data-science-publication/forget-pip-install-use-this-instead-754863c58f1e
